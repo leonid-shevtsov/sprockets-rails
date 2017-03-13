@@ -80,7 +80,8 @@ class TestRailtie < TestBoot
     assert_equal ROOT, env.root
     assert_equal "", env.version
     assert env.cache
-    assert_equal ["#{ROOT}/app/assets/config"], env.paths
+    assert_array_includes_item(env.paths, "#{ROOT}/app/assets/config")
+
     assert_nil env.js_compressor
     assert_nil env.css_compressor
   end
@@ -128,8 +129,9 @@ class TestRailtie < TestBoot
     app.initialize!
 
     assert env = app.assets
-    assert_equal ["#{ROOT}/app/assets/config", "#{ROOT}/javascripts", "#{ROOT}/stylesheets"],
-      env.paths.sort
+    assert_array_includes_item(env.paths, "#{ROOT}/javascripts")
+    assert_array_includes_item(env.paths, "#{ROOT}/stylesheets")
+    assert_array_includes_item(env.paths, "#{ROOT}/app/assets/config")
   end
 
   def test_compressors
@@ -208,6 +210,10 @@ class TestRailtie < TestBoot
     assert_equal "v2", env.version
   end
 
+  def assert_array_includes_item(array, item)
+    assert_equal true, array.include?(item), "Expected #{array.inspect} to include #{item.inspect} but it did not"
+  end
+
   def test_configure
     app.configure do
       config.assets.configure do |env|
@@ -220,8 +226,10 @@ class TestRailtie < TestBoot
     app.initialize!
 
     assert env = app.assets
-    assert_equal ["#{ROOT}/app/assets/config", "#{ROOT}/javascripts", "#{ROOT}/stylesheets"],
-      env.paths.sort
+
+    assert_array_includes_item(env.paths, "#{ROOT}/javascripts")
+    assert_array_includes_item(env.paths, "#{ROOT}/stylesheets")
+    assert_array_includes_item(env.paths, "#{ROOT}/app/assets/config")
   end
 
   def test_environment_is_frozen_if_caching_classes
@@ -381,8 +389,9 @@ class TestRailtie < TestBoot
     assert_kind_of Sprockets::Environment, env
 
     assert_equal ROOT, env.root
-    assert_equal ["#{ROOT}/app/assets/config", "#{ROOT}/javascripts", "#{ROOT}/stylesheets"],
-      env.paths.sort
+    assert_array_includes_item(env.paths, "#{ROOT}/javascripts")
+    assert_array_includes_item(env.paths, "#{ROOT}/stylesheets")
+    assert_array_includes_item(env.paths, "#{ROOT}/app/assets/config")
   end
 
   def test_quiet_assets_defaults_to_off
